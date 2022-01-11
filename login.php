@@ -20,21 +20,19 @@ if (!empty($_POST)) {
             $stmt->bindValue(':email', $email, PDO::PARAM_STR);
             $stmt->execute();
 			$member = $stmt->fetch(PDO::FETCH_ASSOC);
+
+			
 //  ここにパスワードのチェック処理を完成させる
-//  		if( xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ) {
-				// ログイン成功
-
-//  ここにセッションハイジャック対策を追加
-//
-
-				$_SESSION['id'] = $member['id'];
-				$_SESSION['time'] = time();
-
-				// ログイン情報を記録する
-				if ($_POST['save'] == 'on') {
-				    setcookie('email', $_POST['email'], time()+60*60*24*14);
-				    setcookie('password', $_POST['password'], time()+60*60*24*14);
-				}
+            if (password_verify($password,$member['password'])){
+// ログイン認証成功の処理 
+             session_regenerate_id(true);// セッションIDを振り直す 
+		     $_SESSION['id'] = $member['id'];
+		     $_SESSION['time'] = time();
+			// ログイン情報を記録する
+		    if($_POST['save'] == 'on') {
+				setcookie('email', $_POST['email'], time()+60*60*24*14);
+				setcookie('password', $_POST['password'], time()+60*60*24*14);
+			}
 				header('Location: index2.php');
 				exit();
             }else{
